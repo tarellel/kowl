@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    kowl (0.0.1)
+    kowl (0.0.2)
       bundler (>= 1.0, < 3.0)
       rack (~> 2.2)
       rails (~> 6.0.2.2)
