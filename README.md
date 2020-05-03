@@ -269,7 +269,7 @@ User gems that will be included unless the `--noauth` flag is specified when gen
 These gems will be included to setup sidekiq unless the `--skip_sidekiq` flag is used when generating an application.
 
 * [hiredis](https://github.com/redis/hiredis-rb) a C adapter for connecting your application to a Redis datestore _(faster than the ruby redis library)_.
-* [Sidekiq](https://github.com/mperham/sidekiq/)
+* [Sidekiq](https://github.com/mperham/sidekiq/) simple, efficient background processing for Ruby
 * [Sidekiq-Failures](https://github.com/mhfs/sidekiq-failures/) to get a better view of what jobs are failing.
 * [Sidekiq-Scheduler](https://moove-it.github.io/sidekiq-scheduler/) to schedule sidekiq jobs on a given interval.
 * [Sidekiq-Status](https://github.com/utgarda/sidekiq-status) is sidekiq extension to get a better status report of all currently running jobs.
