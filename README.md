@@ -374,7 +374,7 @@ Project Link: [https://github.com/tarellel/kowl](https://github.com/tarellel/kow
 [issues-shield]: https://img.shields.io/github/issues/tarellel/kowl.svg?style=flat-square
 [issues-url]: https://github.com/tarellel/kowl/issues
 [license-shield]: https://img.shields.io/github/license/tarellel/kowl.svg?style=flat-square
-[license-url]: https://github.com/tarellel/kowl/blob/master/LICENSE.txt
+[license-url]: https://github.com/tarellel/kowl/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [product-screenshot]: docs/images/cover.png
 
