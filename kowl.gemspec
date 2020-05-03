@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.authors       = ['Brandon Hicks']
   s.email         = ['tarellel@gmail.com']
   s.summary       = %q{A rails application generator to get you out the door and started without wasting hours to get started.}
-  s.description   = %q{Used to generate a Rails application following a basic setep of best practices, guidelines, and basic setup; to get your Rails application started with a bang. }
+  s.description   = %q{Used to generate a Rails application following a basic setup of best practices, guidelines, and basic setup; to get your Rails application started with a bang. }
   s.homepage      = 'https://github.com/tarellel/kowl'
   s.license       = 'MIT'
 
