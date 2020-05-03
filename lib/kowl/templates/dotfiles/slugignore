@@ -1,0 +1,10 @@
+.idea
+.git
+.cache/
+docs/
+node_modules/
+spec/
+storage/
+test/
+tmp/*
+vendor/cache

@@ -1,0 +1,23 @@
+<%%#
+# Navigation
+
+This partial is used to display the navigation in Administrate.
+By default, the navigation contains navigation links
+for all resources in the admin dashboard,
+as defined by the routes in the `admin/` namespace
+%>
+
+<nav class="navigation" role="navigation">
+  <%%= link_to "#{icon('fas', 'home')} Homepage".html_safe, root_path, class: 'navigation__link navigation__link--inactive', title: 'Return to homepage' %>
+  <%% Administrate::Namespace.new(namespace).resources_with_index_route.each do |resource| %>
+    <%%= link_to(
+      display_resource_name(resource),
+      resource_index_route(resource),
+      class: "navigation__link navigation__link--#{nav_link_state(resource)}"
+    ) if valid_action? :index, resource  %>
+  <%% end %>
+<%- unless options[:skip_sidekiq] -%>
+  <%%= link_to('Sidekiq', '/sidekiq', class: 'navigation__link navigation__link--inactive') if current_user.admin? %>
+<%- end -%>
+  <%%= link_to('LetterOpener'.html_safe, '/letter_opener', class: 'navigation__link navigation__link--inactive') if Rails.env.development? && current_user.admin? %>
+</nav>

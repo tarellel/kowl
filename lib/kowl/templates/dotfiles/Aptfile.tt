@@ -1,0 +1,34 @@
+# Dependencies may vary dependent upon the project
+apt-transport-https
+apt-utils
+build-essential
+ca-certificates
+autogen
+autoconf
+cmake
+libtool
+make
+curl
+wget
+git
+nodejs
+yarn
+graphviz
+sqlite3
+libsqlite3-dev
+libc6-dev
+libpq-dev
+libjemalloc-dev
+# Brotli is used for to compress assets smaller than gzip can (webpacker)
+brotli
+<%- if options[:encrypt] %>
+# https://github.com/crypto-rb/rbnacl/wiki/Installing-libsodium
+libsodium18
+<%- end -%>
+# Used for running background jobs
+redis-server
+
+# Image Processing
+libvips
+# If you don't want to use vips, you can also use imagemagick
+# imagemagick

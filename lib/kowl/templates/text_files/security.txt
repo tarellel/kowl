@@ -1,0 +1,6 @@
+# https://securitytxt.org/
+# If you would like to to report a security issue you may report it to us through the following methods.
+Contact: 
+Encryption: 
+Acknowledgments: 
+Preferred-Languages: 

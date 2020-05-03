@@ -1,0 +1,20 @@
+html { min-height: 100%; margin: 0; padding: 0; position: relative; }
+body { background-color: #FFFFFF; }
+
+.ui.menu .item img.logo { margin-right: 1.5em; }
+.main.container { min-height: 90%; padding-top: 5em; }
+.wireframe { margin-top: 2em; }
+// spacing add, otherwise form buttons will end up right along the bottom of previous input
+.form-actions { margin: 1em 0; }
+
+// NAVBAR
+a.header.item { margin-right: 1rem !important; }
+
+// link styling when you're logged in
+span.current_user {
+  color: darken(#26d4cb, 7%) !important;
+
+  &:hover {
+    color: #26d4cb !important;
+  }
+}

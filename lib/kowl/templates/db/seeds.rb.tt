@@ -1,0 +1,14 @@
+# frozen_string_literal: true
+
+# This file should contain all the record creation needed to seed the database with its default values.
+# The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
+#
+# Examples:
+#
+#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
+#   Character.create(name: 'Luke', movie: movies.first)
+<%- unless options[:noauth] -%>
+User.create!(email: 'test@test.com', password: 'Passw0rd!', password_confirmation: 'Passw0rd!', role: 'superuser', reset_password_token: '<%= SecureRandom.hex(16).force_encoding(Encoding::US_ASCII) %>', unlock_token: '<%= SecureRandom.hex(16).force_encoding(Encoding::US_ASCII) %>')
+User.create!(email: 'test2@test.com', password: 'Pa$$w0rd!', password_confirmation: 'Pa$$w0rd!', role: 'staff', reset_password_token: '<%= SecureRandom.hex(16).force_encoding(Encoding::US_ASCII) %>', unlock_token: '<%= SecureRandom.hex(16).force_encoding(Encoding::US_ASCII) %>')
+User.create!(email: 'test_user@test.com', password: 'P4ssW0rd!', password_confirmation: 'P4ssW0rd!', reset_password_token: '<%= SecureRandom.hex(16).force_encoding(Encoding::US_ASCII) %>', unlock_token: '<%= SecureRandom.hex(16).force_encoding(Encoding::US_ASCII) %>')
+<%- end -%>

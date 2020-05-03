@@ -1,0 +1,38 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  /* Antialias the font  for smooth text rendering */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: grayscale;
+  font-smoothing: antialiased;
+  font-smooth: always;
+  // Margin bottom by footer height
+  margin-bottom: 60px;
+}
+
+h1, h2, h3, h4, h5 {
+  .text-muted {
+    color: #969ea5 !important;
+    font-size: 90% !important;
+    font-style: italic;
+  }
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+// => https://getbootstrap.com/docs/4.1/examples/sticky-footer-navbar/sticky-footer-navbar.css
+.footer {
+  background-color: #f5f5f5;
+  bottom: 0;
+  /* Vertically center the text there */
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  line-height: 60px;
+  position: absolute;
+  width: 100%;
+}

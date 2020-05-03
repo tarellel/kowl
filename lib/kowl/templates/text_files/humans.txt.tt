@@ -1,0 +1,15 @@
+# http://humanstxt.org/
+
+/* ----- Team ----- */
+Developer:    John Doe
+Location:     City, Country
+twitter:      @twitter_alias
+Website:      https://***
+
+
+/* ----- Site ----- */
+Last Updated: <%= Date.current.strftime('%Y/%m/%d') %>
+Standards:    HTML5, CSS3, JavaScript
+Components:   Rails, jQuery<%= (options[:framework] == 'default' ? '' : ", #{options[:framework]}") %>
+URL:          https://*****
+Launched:     <%= Date.current.strftime('%Y') %>

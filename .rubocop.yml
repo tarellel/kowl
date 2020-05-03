@@ -1,0 +1,65 @@
+require:
+  - rubocop-performance
+
+AllCops:
+  NewCops: disable
+  Exclude:
+    - '**.gem'
+    - '**.gemspec'
+    - Gemfile
+    - Guardfile
+    - Rakefile
+    - 'bin/**'
+    - 'docs/**/*'
+    - 'hidden/**/*'
+    - 'lib/kowl/templates/**/*'
+    - 'lib/kowl/geodb.rb'
+    - 'node_modules/**/*'
+    - 'pkg/**/*'
+    - 'test/**/*'
+    - 'vendor/**/*'
+    - '**/*.tt'
+    - '**/*.erb'
+    - '**/*.slim'
+    - '**/*.haml'
+    - '**/*.yml'
+    - '.**'
+  TargetRubyVersion: 2.6
+  UseCache: true
+Layout/LineLength:
+  AllowURI: true
+  Enabled: false
+Metrics/AbcSize:
+  Max: 42
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Max: 12
+  Enabled: false
+Metrics/MethodLength:
+  CountComments: false
+  Enabled: false
+  Max: 43
+Metrics/ModuleLength:
+  Enabled: false
+  Max: 164
+Metrics/PerceivedComplexity:
+  Enabled: false
+  Max: 18
+# Naming/AccessorMethodName is disabled because of overriding some default rails methods
+Naming/AccessorMethodName:
+  Enabled: false
+Style/BlockComments:
+  Enabled: false
+Style/Documentation:
+  Enabled: false
+Style/EmptyMethod:
+  EnforcedStyle: expanded
+Style/FrozenStringLiteralComment:
+  Description: ">- Apply frozen_string_literal to the top of ruby files\nThis is for transitioniting from Ruby 2.3 to Ruby 3.0"
+  Enabled: true
+Style/Lambda:
+  EnforcedStyle: line_count_dependent
+Style/RescueStandardError:
+  EnforcedStyle: implicit

@@ -1,0 +1,133 @@
+FROM node:12-slim as node
+FROM ruby:<%= RUBY_VERSION %>-slim
+
+########################################
+# Set Environment variables
+########################################
+# If a RAILS_MASTER_KEY is used to encrypt credentails within the container
+# ARG RAILS_MASTER_KEY
+# ENV RAILS_MASTER_KEY=$RAILS_MASTER_KEY
+ARG RAILS_ENV="development"
+ENV DEBIAN_FRONTEND noninteractive
+ENV PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/app/bin:$PATH"
+<%= dockerfile_database_args unless options[:database] == 'sqlite3' -%>
+ENV APP_USER='app' \
+    APP_GROUP='app' \
+    APP_HOME='/app' \
+    BUNDLE_PATH="vendor/cache" \
+    BUNDLE_JOBS=4 \
+    BUNDLE_RETRY=3 \
+    RAILS_ENV=$RAILS_ENV \
+    MALLOC_ARENA_MAX=2
+  # MALLOC_ARENA_MAX used to improve memory GC cycle performance
+  # https://github.com/prestodb/presto/issues/8993
+  # https://github.com/heroku/heroku-buildpack-ruby/issues/751
+  # https://www.speedshop.co/2017/12/04/malloc-doubles-ruby-memory.html
+
+
+########################################
+# Basic application requirements
+# => Update all packages before install required packages
+# => Install essential header libraries
+########################################
+RUN apt-get update 2>/dev/null && \
+    apt-get install -qq --no-install-recommends apt-utils 2>/dev/null && \
+    apt-get upgrade -qq && apt-get -qq dist-upgrade 2>/dev/null && \
+    apt-get install -qq build-essential apt-transport-https ca-certificates 2>/dev/null && \
+<%= debian_docker_dependencies(options) -%>
+    apt-get autoremove -qq && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    truncate -s 0 /var/log/*log
+# ==> Added jemalloc to run Ruby/Rails applications without malloc (to reduce memory consumption and  allow faster memory allocation)
+ENV LD_PRELOAD='/usr/lib/x86_64-linux-gnu/libjemalloc.so'
+# LD_PRELOAD is where the system can find the Jemalloc library
+
+<%- unless options[:database] == 'sqlite3' && options[:skip_sidekiq] -%>
+# Dockerize is used to prevent the application container from dieing (because other services haven't finished starting yet)
+# => This is because some of the database containers have an initialization time and will cause your application to fail if it tries to create the application database before mysql has loaded
+ENV DOCKERIZE_VERSION v0.6.1
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
+    tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
+    rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+<%- end -%>
+
+# Used as an init system to prevent zombie processes as the containers cycle or a process ends
+ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64 /usr/local/bin/dumb-init
+RUN chmod +x /usr/local/bin/dumb-init
+
+<%- if %w[oracle sqlserver].include? options[:database] -%>
+########################################
+# Databases
+########################################
+<%- if options[:database] == 'oracle' %>
+# https://www.oracle.com/database/technologies/instant-client/linux-x86-64-downloads.html
+ENV INSTANT_CLIENT_SHORT_VERSION="19.6"
+ENV INSTANT_CLIENT_LONG_VERSION="19.6.0.0.0"
+ENV INSTANT_CLIENT_PATH="$APP_HOME/oracle"
+ENV PATH="/usr/lib/oracle/$INSTANT_CLIENT_SHORT_VERSION/client64/bin:${PATH}"
+ENV ORACLE_HOME="/usr/lib/oracle/$INSTANT_CLIENT_SHORT_VERSION/client64" \
+    OCI_LIB="/usr/lib/oracle/$INSTANT_CLIENT_SHORT_VERSION/client64/lib" \
+    TNS_ADMIN="/usr/lib/oracle/$INSTANT_CLIENT_SHORT_VERSION/client64/network/admin" \
+    LD_LIBRARY_PATH="/usr/lib/oracle/$INSTANT_CLIENT_SHORT_VERSION/client64/lib"
+ENV INSTANT_CLIENT_BASIC_PATH="$INSTANT_CLIENT_PATH/oracle-instantclient$INSTANT_CLIENT_SHORT_VERSION-basic-$INSTANT_CLIENT_LONG_VERSION-1.x86_64.rpm"
+ENV INSTANT_CLIENT_DEVEL_PATH="$INSTANT_CLIENT_PATH/oracle-instantclient$INSTANT_CLIENT_SHORT_VERSION-devel-$INSTANT_CLIENT_LONG_VERSION-1.x86_64.rpm"
+ENV INSTANT_CLIENT_SQLPLUS_PATH="$INSTANT_CLIENT_PATH/oracle-instantclient$INSTANT_CLIENT_SHORT_VERSION-sqlplus-$INSTANT_CLIENT_LONG_VERSION-1.x86_64.rpm"
+# Download required Oracle cli clients and enable them for usage with our application
+RUN mkdir -p $INSTANT_CLIENT_PATH && \
+    wget -q https://download.oracle.com/otn_software/linux/instantclient/19600/oracle-instantclient$INSTANT_CLIENT_SHORT_VERSION-basic-$INSTANT_CLIENT_LONG_VERSION-1.x86_64.rpm --no-check-certificate -O $INSTANT_CLIENT_BASIC_PATH && \
+    wget -q https://download.oracle.com/otn_software/linux/instantclient/19600/oracle-instantclient$INSTANT_CLIENT_SHORT_VERSION-devel-$INSTANT_CLIENT_LONG_VERSION-1.x86_64.rpm --no-check-certificate -O $INSTANT_CLIENT_DEVEL_PATH && \
+    wget -q https://download.oracle.com/otn_software/linux/instantclient/19600/oracle-instantclient$INSTANT_CLIENT_SHORT_VERSION-sqlplus-$INSTANT_CLIENT_LONG_VERSION-1.x86_64.rpm --no-check-certificate -O $INSTANT_CLIENT_SQLPLUS_PATH && \
+    alien -i $INSTANT_CLIENT_BASIC_PATH 2>/dev/null && \
+    alien -i $INSTANT_CLIENT_DEVEL_PATH 2>/dev/null && \
+    alien -i $INSTANT_CLIENT_SQLPLUS_PATH 2>/dev/null && \
+    ldconfig
+<%- elsif options[:database] == 'sqlserver' -%>
+RUN wget ftp://ftp.freetds.org/pub/freetds/stable/freetds-1.00.27.tar.gz && \
+    tar -xzf freetds-1.00.27.tar.gz && \
+    rm -rf freetds-1.00.27.tar.gz && \
+    cd freetds-1.00.27 && \
+    ./configure --prefix=/usr/local --with-tdsver=7.3 --silent >/dev/null 2>&1 && \
+    make -j "$(nproc)" >/dev/null 2>&1 && \
+    make install >/dev/null 2>&1 && \
+    ldconfig
+<%- end -%>
+<%- end -%>
+
+########################################
+# NODE (required for numerous Rails components, especially compiling webpacker)
+########################################
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=node /usr/local/bin/npm /usr/local/bin/npm
+COPY --from=node /opt/yarn-* /opt/yarn
+RUN ln -s /opt/yarn/bin/yarn /usr/local/bin/yarn && \
+    ln -s /opt/yarn/bin/yarnpkg /usr/local/bin/yarnpkg && \
+    mkdir -p /tmp/src /opt
+ENV PATH="/opt/yarn/bin:${PATH}"
+
+########################################
+# APPUSER
+########################################
+RUN useradd -m -u 1000 -U $APP_USER && \
+    mkdir -p $APP_HOME && \
+    chown $APP_USER:$APP_USER $APP_HOME && \
+    gem update --no-document && gem update --system --no-document
+
+########################################
+# Application / Install gems
+########################################
+WORKDIR $APP_HOME
+COPY . $APP_HOME
+RUN chown -R $APP_USER:$APP_USER $APP_HOME
+USER $APP_USER
+# RUN set -ex && bundle check || bundle install --jobs ${BUNDLE_JOBS} --retry ${BUNDLE_RETRY} --quiet --without test
+RUN bundle config set without 'test' && \
+    bundle config set clean true && \
+    set -ex && bundle check || bundle install --jobs ${BUNDLE_JOBS} --retry ${BUNDLE_RETRY} --quiet && bundle clean && \
+<%- unless options[:skip_javascript] -%>
+    bin/yarn install --check-files && \
+<%- end -%>
+    rails assets:precompile<%= dockerfile_migration_snip(options[:database]) -%>
+
+HEALTHCHECK CMD curl --fail "http://$(/bin/hostname -i | /usr/bin/awk '{ print $1 }'):${PORT:-3000}" || exit 1
+ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
+CMD ["bundle", "exec", "rails","server", "-p", "3000", "-b", "0.0.0.0"]

@@ -1,0 +1,26 @@
+//= require rails-ujs
+//= require jquery3
+//= require jquery_ujs
+//= require semantic-ui
+//= require activestorage
+<%- unless options[:skip_javascript] -%>
+//= require turbolinks
+<%- end -%>
+//= require_tree .
+
+<%- if options[:skip_javascript] -%>
+$(document).ready(function() {
+<%- else -%>
+$(document).on("turbolinks:load",function(){
+<%- end -%>
+  // Allow the user to close the flash messages
+  $('.message .close')
+    .on('click', function(){
+      $(this).closest('.message').transition('fade');
+  });
+
+  // Automatically close flash messages after 3 seconds
+  window.setTimeout(function() {
+    $('.message').transition('fade');
+  }, 3000);
+});

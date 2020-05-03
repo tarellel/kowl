@@ -1,0 +1,29 @@
+# frozen_string_literal: true
+
+class LoginActivity < ApplicationRecord
+  # == Attributes =====================================
+<%- if options[:encrypt] -%>
+  encrypts :identity, :ip
+  blind_index :identity, :ip
+<%- end -%>
+
+  # == Constants ======================================
+
+  # == Extensions =====================================
+
+  # == Relationships ==================================
+  belongs_to :user, polymorphic: true, optional: true
+
+  # == Validations ====================================
+
+  # == Scopes =========================================
+  # This is used, by default to only show successful logins
+  # => This will remove users that are seeded, creates, and/or failed attempts
+  default_scope -> { where(user_type: 'User') }
+
+  # == Callbacks ======================================
+
+  # == ClassMethods ===================================
+
+  # == InstanceMethods ================================
+end

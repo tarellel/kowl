@@ -1,0 +1,16 @@
+# frozen_string_literal: true
+
+if defined?(Pagy)
+  <%- if options[:framework] == 'bootstrap' -%>
+  require 'pagy/extras/bootstrap'
+  <%- elsif options[:framework] == 'semantic' -%>
+  require 'pagy/extras/semantic'
+  <%- end -%>
+  require 'pagy/extras/trim'      # No need for page=1
+  require 'pagy/extras/overflow'  # prevent user form requesting a page from the last resulting page
+  # require 'pagy/extras/countless' # Used to avoid issuing additional count queries when doing pagination
+
+  Pagy::VARS[:overflow] = :last_page
+  # Set default number of items per page as 25
+  Pagy::VARS[:items] = 25
+end

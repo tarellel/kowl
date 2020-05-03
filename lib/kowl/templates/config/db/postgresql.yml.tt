@@ -1,0 +1,37 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  # For details on connection pooling, see Rails configuration guide
+  # https://guides.rubyonrails.org/configuring.html#database-pooling
+  pool: <%%= ENV.fetch('RAILS_MAX_THREADS') { 5 } %>
+  timeout: <%%= ENV.fetch('DB_TIMEOUT', 3).to_i.seconds %>
+  username: <%%= ENV.fetch('DB_USER') { 'postgres' } %>
+  password: <%%= ENV.fetch('DB_PASSWORD') { 'password' } %>
+  host: <%%= ENV.fetch('DB_HOST') { 'localhost' } %>
+
+development:
+  <<: *default
+  database: <%= app_name %>_development
+
+staging:
+  <<: *default
+  database: <%= app_name %>_staging
+
+# if you use pgbounder you need to disable prepared_statements -> https://edgeguides.rubyonrails.org/configuring.html#configuring-a-postgresql-database
+production:
+  <<: *default
+  database: <%= app_name %>_production
+  username: <%= app_name %>
+  password: <%%= ENV['<%= app_name.upcase %>_DATABASE_PASSWORD'] %>
+  # https://github.com/ankane/the-ultimate-guide-to-ruby-timeouts/#statement-timeouts-1
+  connect_timeout: 2
+  checkout_timeout: 5
+  variables:
+    statement_timeout: 5000
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test:
+  <<: *default
+  database: <%= app_name %>_test

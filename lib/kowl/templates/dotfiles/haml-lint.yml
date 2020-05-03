@@ -1,0 +1,23 @@
+# src: https://github.com/sds/haml-lint
+# => https://github.com/sds/haml-lint/blob/master/config/default.yml
+# sample: https://github.com/gitlabhq/gitlabhq/blob/master/.haml-lint.yml
+
+skip_frontmatter: false
+exclude:
+  - 'bin/*'
+  - 'config/**/*'
+  - 'coverage/**/*'
+  - 'db/**/*'
+  - 'log/**/*'
+  - 'node_modules/**/*'
+  - 'public/**/*'
+  - 'spec/**/*'
+  - 'storage/**/*''
+  - 'test/**/*'
+  - 'tmp/**/*'
+  - 'vendor/**/*'
+
+
+linters:
+  LineLength:
+    enabled: false

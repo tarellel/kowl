@@ -1,0 +1,15 @@
+# https://gist.github.com/wzup/fc3254562236c1ec3f69
+# https://github.com/beautify-web/js-beautify/blob/master/jsbeautifyrc
+{
+  "end-with-newline": true,
+  "indent_char": " ",
+  "indent_level": 0,
+  "indent_size": 2,
+  "indent_with_tabs": false,
+  "indent_handlebars": true,
+  "jslint_happy": true,
+  "max_preserve_newlines": 2,
+  "object": {},
+  "other": " ",
+  "preserve_newlines": true,
+}

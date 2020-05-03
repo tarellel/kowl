@@ -1,0 +1,24 @@
+@import 'semantic-ui';
+@import 'font-awesome-sprockets';
+@import 'font-awesome';
+@import 'custom_styling';
+
+body {
+  /* Antialias the font  for smooth text rendering */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: grayscale;
+  font-smoothing: antialiased;
+  font-smooth: always;
+  margin: 0;
+  padding: 0;
+}
+
+.footer {
+  background-color: #f5f5f5;
+  bottom: 0;
+  height: 1.5rem;
+  position: absolute;
+  width: 100%;
+}

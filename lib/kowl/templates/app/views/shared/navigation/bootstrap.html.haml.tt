@@ -1,0 +1,36 @@
+%nav.navbar.navbar-expand-lg.navbar-light.bg-light
+  = link_to '/', class: 'navbar-brand' do
+     = '<%= app_name.titleize %>'
+  %button.navbar-toggler{"aria-controls" => "navbarNav", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarNav", "data-toggle" => "collapse", :type => "button"}
+    %span.navbar-toggler-icon
+  #navbarNav.collapse.navbar-collapse
+    %ul.navbar-nav
+      %li.nav-item.active
+        %a.nav-link{:href => "/"}
+          Home
+          %span.sr-only (current)
+      %li.nav-item
+        %a.nav-link{:href => "#"} Features
+      %li.nav-item
+        %a.nav-link{:href => "#"} Pricing
+      %li.nav-item
+        %a.nav-link.disabled{:href => "#"} Disabled
+<%- unless options[:noauth] -%>
+    %ul.nav.navbar-nav.ml-auto
+      - if user_signed_in?
+        - if current_user.staff_member?
+          %li.nav-item
+            = link_to 'admin', admin_root_path, class: 'nav-link'
+        %li.nav-item.dropdown
+          %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
+            = current_user.email
+          .dropdown-menu.dropdown-menu-right{"aria-labelledby" => "navbarDropdown"}
+            = link_to "#{icon('fas', 'user-circle mr-1')} Edit Account".html_safe, edit_user_registration_path, class: 'dropdown-item'
+            - if current_user != true_user
+              = link_to stop_impersonating_users_path, method: :post, class: 'dropdown-item', title: 'Stop impersonating user' do
+                == "#{icon('fas','theater-masks')} Stop Impersonating"
+            .dropdown-divider
+            = link_to "#{icon('fas', 'sign-out-alt mr-1')} Logout".html_safe, destroy_user_session_path, method: :delete, class: 'dropdown-item'
+      - else
+        %li= link_to('Login', new_user_session_path, class: 'nav-item nav-link')
+<%- end -%>

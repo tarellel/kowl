@@ -1,0 +1,9 @@
+# frozen_string_literal: true
+
+if defined?(Administrate)
+  Rails.application.configure do
+    config.to_prepare do
+      Administrate::ApplicationController.helper <%= app_name.titleize %>::Application.helpers
+    end
+  end
+end

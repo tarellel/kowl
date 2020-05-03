@@ -1,0 +1,48 @@
+<div class="ui fixed inverted menu">
+  <div class="menu">
+    <%%= link_to '/', class: 'header item' do %><%= app_name.titleize %><%%- end %>
+    <a href="/" class="item">Home</a>
+    <div class="ui simple dropdown item">
+      Dropdown <i class="dropdown icon"></i>
+      <div class="menu">
+        <a class="item" href="#">Link Item</a>
+        <a class="item" href="#">Link Item</a>
+        <div class="divider"></div>
+        <div class="header">Header Item</div>
+        <div class="item">
+          <i class="dropdown icon"></i>
+          Sub Menu
+          <div class="menu">
+            <a class="item" href="#">Link Item</a>
+            <a class="item" href="#">Link Item</a>
+          </div>
+        </div>
+        <a class="item" href="#">Link Item</a>
+      </div>
+    </div>
+  </div>
+<%- unless options[:noauth] -%>
+  <div class="right menu">
+    <%% if user_signed_in? %>
+      <%%- if current_user.staff_member? %>
+        <%%= link_to 'admin', admin_root_path, class: 'item' %>
+      <%%- end -%>
+      <div class="ui simple dropdown item">
+        <span class="current_user"><%%= current_user.email %></span> <i class="dropdown icon"></i>
+        <div class="menu">
+          <%%= link_to "#{icon('fas', 'user-circle mr-1')} Edit Account".html_safe, edit_user_registration_path, class: 'item' %>
+          <%%- if current_user != true_user %>
+            <%%= link_to stop_impersonating_users_path, method: :post, class: 'item', title: 'Stop impersonating user' do %>
+              <%%== "#{icon('fas','theater-masks')} Stop Impersonating" %>
+            <%% end %>
+          <%%- end %>
+          <div class="divider"></div>
+          <%%= link_to "#{icon('fas', 'sign-out-alt mr-1')} Logout".html_safe, destroy_user_session_path, method: :delete, class: 'item' %>
+        </div>
+      </div>
+    <%% else %>
+      <%%= link_to('Login', new_user_session_path, class: 'item') %>
+    <%% end %>
+  </div>
+<% end %>
+</div>

@@ -1,0 +1,106 @@
+#!/usr/bin/env ruby
+require 'pathname'
+source_path = (Pathname.new(__FILE__).dirname + '../lib').expand_path
+$LOAD_PATH << source_path
+
+# require is down here, so files won't be loaded if the kowl command has failed to reach this point
+require 'kowl'
+
+if ARGV.empty?
+  puts "\e[31mPlease provide a name for the new application.\e[0m"
+  puts "\nSee --help for more info\n"
+  exit 0
+elsif ['-h', '--help'].include? ARGV[0]
+  help_output = <<~HELPSTR
+    Usage:
+      kowl AppName
+
+    Options:
+    -d [#{highlight('--database=DATABASE')}]                     # If you want to use a specific database for the application (builds with sqlite3 until you are ready)
+                                                 # #{dh('Default: sqlite3')}
+       [#{highlight('--docker_distro=DISTRO')}]                  # Specify what docker distro to use for the application (alpine, debian)
+                                                 # #{dh('Default: alpine')} \e[33m(If you specify to use Oracle your distro will default to Debian)\e[0m
+       [#{highlight('--encrypt')}]                               # If you want encrypt various user data (using lockbox)? (For GDPR compliance)
+                                                 # #{dh('Default: false')} \e[33m(This requires you to install libsodium in order to encrypt the user data)\e[0m
+       [#{highlight('--framework=CSSFRAMEWORK')}]                # If you want to generate views using a specific CSS framework (bootstrap, semantic, none)
+                                                 # #{dh('Default: bootstrap')}
+       [#{highlight('--git_repo=REPO_NAME')}]                    # If you've already created a gitlab repo, specify the repo and and it will be added.
+                                                 # ie: \e[33mhttps://github/username/REPO_NAME.git\e[0m
+                                                 # #{dh('Default: nil')}
+       [#{highlight('--mailer=MAILER')}]                         # Which transactional mailer you want to use in production (postmark or sparkpost)?
+                                                 # #{dh('Default: sparkpost')} (unless you specify to --skip_mailer, than neither will be used)
+       [#{highlight('--noauth')}]                                # If you would like to skip adding devise and pundit to the application
+                                                 # #{dh('Default: false')}
+       [#{highlight('--simpleform')}]                            # Do you want your application to use simpleform to generate forms
+                                                 # #{dh('Default: false')}
+       [#{highlight('--skip_docker')}]                           # If you want your application to skip generating any docker files (Dockerfile, docker-compose.yml, and .dockerignore)
+                                                 # #{dh('Default: false')}
+       [#{highlight('--skip_erd')}]                              # If you want to skip generating an ERD for your application (requires graphviz to be installed)
+                                                 # #{dh('Default: false')}
+    -G [#{highlight('--skip_git')}]                              # Do you want the generator to skip creating initializing and commit files to git
+                                                 # #{dh('Default: false')}
+       [#{highlight('--skip_javascript')}]                       # Skip adding javascript (webpacker) to the application
+                                                 # #{dh('Default: false')}
+       [#{highlight('--skip_mailer')}]                           # Do you want to skip setting up a
+                                                 # #{dh('Default: false')}
+       [#{highlight('--skip_pagination')}]                       # Do you want to skip using pagination with your application?
+                                                 # #{dh('Default: false')}
+       [#{highlight('--skip_pry')}]                              # Do you want to skip using pry with your applications rails console?
+                                                 # #{dh('Default: false')}
+       [#{highlight('--skip_sidekiq')}]                          # Do you want to skip setting up sidekiq (for background jobs, mailers, etc.)
+                                                 # #{dh('Default: false')}
+       [#{highlight('--skip_spring')}]                           # If you hate spring and want to skip using it with your application.
+                                                 # #{dh('Default: false')}
+    -T [#{highlight('--skip_tests')}]                            # Do you want your application to skip building with tests
+                                                 # #{dh('Default: false')}
+       [#{highlight('--skip_turbolinks')}]                       # If you want to skip adding turbolinks to your applications assets
+                                                 # #{dh('Default: false')}
+       [#{highlight('--template_engine=ENGINE')}]                # Assign a template_engine to use for the applications views (erb, slim, haml)
+                                                 # #{dh('Default: erb')}
+       [#{highlight('--test_engine=TEST_ENGINE')}]               # If you want to generate the application using a specific test suite (minitest, RSpec, none)
+                                                 # #{dh('Default: rspec')}
+       [#{highlight('--uuid')}]                                  # Enable setting as database primary keys as UUIDs (Only while using PostgreSQL)
+                                                 # #{dh('Default: false')} (NOTE: This feature is still under development)
+    -W [#{highlight('--webpack=JSFRAMEWORK')}]                     # If you want initialize to webpacker with a specific JS framework (react vue angular elm stimulus)
+                                                 # #{dh('Default: nil')}
+
+    Description:
+      A tool to easily generate a Rails (~> 6) application with a number of configurations, templates, and generators applied.
+      That way your're not spending days running through gems and documentation to get an application setup.
+      (This can include setting up bootstrap, devise, sidekiq, linters, dockerizing your application, and various other steps)
+
+
+    Examples:
+      \e[34mkowl AppName\e[0m
+      Generate an application using sqlite3, with a name of "AppName", requiring authentication, using RSpec, and using bootstrap.
+
+      \e[34mkowl AppName --database=oracle --simpleform --noauth\e[0m
+      This will generate an application using the Oracle database, using simple_form, and not requiring any sort of authentication (anyone can hit this app.)
+
+      \e[34mkowl AppName --simpleform --template_engine=slim\e[0m
+      This will generate an application defaulting to sqlite3, using simple_form, the Slim template engine, with pagination, and requiring authentication to load the application.
+
+      \e[34mkowl AppName --simpleform --template_engine=slim --skip_tests\e[0m
+      Generate an application using sqlite3, using bootstrap CSS framework, using the slim template engine, and build without any tests.
+
+      \e[34mkowl AppName --git_repo=https://github/username/REPO_NAME.git\e[0m
+      Will generate an app with remote directory of https://github/username/REPO_NAME.git
+
+      \e[34mkowl foobar --template_engine=haml --simpleform --framework=semantic;\e[0m
+      This will generating an app with the HAML template engine, using simpleform, and using the Semantic UI CSS Framework
+  HELPSTR
+  puts help_output
+  exit 0
+elsif ['-v', '--version'].include? ARGV[0]
+  puts "\e[34mKowl\e[0m #{Kowl::VERSION}"
+  exit 0
+elsif !ENV['RAILS_ENV'].blank? && ENV['RAILS_ENV'] != 'development'
+  # This application generator should be ran with RAILS_ENV set as development
+  puts "\e[31mIn order to generate the application you need to set your RAILS_ENV to development mode.\e[0m"
+  exit 0
+end
+
+templates_root = File.expand_path(File.join('..', 'lib', 'kowl', 'templates'), File.dirname(__FILE__))
+Kowl::Overrides::AppGenerator.source_root templates_root
+Kowl::Overrides::AppGenerator.source_paths << Rails::Generators::AppGenerator.source_root << templates_root
+Kowl::Overrides::AppGenerator.start

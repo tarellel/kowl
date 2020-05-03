@@ -1,0 +1,12 @@
+web: env bundle exec rails s -u puma -b 0.0.0.0 -p 3000
+<%- unless options[:skip_sidekiq] -%>
+# If background jobs are required
+# redis: redis-server /usr/local/etc/redis.conf
+<%- if config[:env] == 'development' -%>
+redis: redis-server --port 6379
+<%- end -%>
+sidekiq: env bundle exec sidekiq -C ./config/sidekiq.yml
+<%- end -%>
+<%- if !options[:skip_javascript] && (config[:env] == 'development') -%>
+webpack: WEBPACKER_DEV_SERVER_HOST=0.0.0.0 bundle exec ./bin/webpack-dev-server
+<%- end -%>

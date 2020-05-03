@@ -1,0 +1,15 @@
+FROM mysql:5.7
+ENV MYSQL_ROOT_PASSWORD="<%= SecureRandom.hex(16).force_encoding(Encoding::US_ASCII) %>"
+
+RUN echo "\n"\
+  "CREATE DATABASE IF NOT EXISTS \`<%= app_name %>_development\`;\n"\
+  "CREATE DATABASE IF NOT EXISTS \`<%= app_name %>_production\`;\n"\
+  "CREATE DATABASE IF NOT EXISTS \`<%= app_name %>_staging\`;\n"\
+  "CREATE DATABASE IF NOT EXISTS \`<%= app_name %>_test\`;\n"\
+  "CREATE USER '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';\n"\
+  "GRANT ALL ON \`<%= app_name %>_development\`.* TO '${DB_USER}'@'%';\n"\
+  "GRANT ALL ON \`<%= app_name %>_production\`.* TO '${DB_USER}'@'%';\n"\
+  "GRANT ALL ON \`<%= app_name %>_staging\`.* TO '${DB_USER}'@'%';\n"\
+  "GRANT ALL ON \`<%= app_name %>_test\`.* TO '${DB_USER}'@'%';\n"\
+  "FLUSH PRIVILEGES;"\
+  >> /docker-entrypoint-initdb.d/prepare_rails_db.sql

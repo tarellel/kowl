@@ -1,0 +1,21 @@
+# https://prettier.io/docs/en/ignore.html
+# https://github.com/gitlabhq/gitlabhq/blob/master/.prettierignore
+app/assets/javascripts/locale/**/app.js
+app/assets/stylesheets/vendor/
+node_modules/
+package.json
+plugins/**/assets/stylesheets/vendor/
+public/
+storage/
+tmp/
+vendor/
+build
+.build
+
+# ignore stylesheets for now as this clashes with our linter
+*.css
+*.scss
+
+# Ignore locale (i18n config) files
+config/locales/**/*.yml
+!config/locales/**/*.en.yml

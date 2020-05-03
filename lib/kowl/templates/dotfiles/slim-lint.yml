@@ -1,0 +1,23 @@
+# configuration for using slim-lint
+# src: https://github.com/sds/slim-lint
+# => https://github.com/sds/slim-lint/blob/master/config/default.yml
+exclude:
+  - app/assets/*
+  - /bin/**/*
+  - db/**/*
+  - config/**/*
+  - coverage/**/*
+  - db/**/*
+  - log/**/*
+  - node_modules/**/*
+  - public/*
+  - spec/*
+  - storage/*
+  - test/*
+  - tmp/*
+
+
+linters:
+  LineLength:
+    enabled: false
+    #max: 100

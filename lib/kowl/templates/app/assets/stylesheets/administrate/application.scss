@@ -1,0 +1,44 @@
+@charset 'utf-8';
+
+@import 'reset/normalize';
+@import 'selectize';
+@import 'datetime_picker';
+
+@import 'library/clearfix';
+@import 'library/data-label';
+@import 'library/variables';
+
+@import 'base/forms';
+@import 'base/layout';
+@import 'base/lists';
+@import 'base/tables';
+@import 'base/typography';
+
+@import 'components/app-container';
+@import 'components/attributes';
+@import 'components/buttons';
+@import 'components/cells';
+@import 'components/field-unit';
+@import 'components/flashes';
+@import 'components/form-actions';
+@import 'components/main-content';
+@import 'components/navigation';
+@import 'components/pagination';
+@import 'components/search';
+
+@import 'utilities/text-color';
+
+// Plugins and additional Components
+@import 'font-awesome-sprockets';
+@import 'font-awesome';
+
+// Smooth out the fonts and text displayed on the dashboard
+body {
+  /* Antialias the font  for smooth text rendering */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: grayscale;
+  font-smoothing: antialiased;
+  font-smooth: always;
+}

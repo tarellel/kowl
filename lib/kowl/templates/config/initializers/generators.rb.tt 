@@ -1,0 +1,31 @@
+# frozen_string_literal: true
+
+Rails.application.config.generators do |g|
+  g.assets false
+  g.javascripts false
+<%- unless options[:framework].blank? || options[:framework] == 'none' -%>
+  g.stylesheets false
+<%- end -%>
+  g.jbuilder false
+  # g.helper false
+<%- if options[:simpleform] -%>
+  g.form_framework :simple_form
+<%- end -%>
+<%- if options[:template_engine] != 'erb' -%>
+  g.template_engine :<%= options[:template_engine] %>
+<%- end -%>
+<%- if options[:database] == 'postgresql' && options[:uuid] -%>
+  g.orm :active_record, primary_key_type: :uuid
+<%- end -%>
+
+<%- unless options[:test_engine].blank? || options[:skip_tests] -%>
+  # Test generators
+  g.fixture_replacement :factory_bot, dir: '<%= (options[:test_engine] == 'rspec' ? 'spec' : 'test') -%>/factories'
+<%- if options[:test_engine] == 'minitest' -%>
+  g.test_framework :test_unit, fixture: true
+<%- elsif options[:test_engine] == 'rspec' -%>
+  g.integration_tool :rspec
+  g.test_framework :rspec, fixture: false
+<%- end -%>
+<%- end -%>
+end

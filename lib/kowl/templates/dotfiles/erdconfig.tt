@@ -1,0 +1,24 @@
+attributes:
+  - content
+  - primary_key
+  - timestamp
+  - foreign_key
+  - inheritance
+disconnected: true
+filename: <%= app_name.parameterize %>_erd
+filetype: png
+indirect: true
+inheritance: true
+markup: true
+notation: bachman
+orientation: horizontal
+polymorphism: true
+sort: true
+warn: false
+title: <%= app_name.titleize %> ERD Diagram
+exclude: "ApplicationRecord,Version,PaperTrail::Version,ActiveRecord::InternalMetadata,ActiveRecord::SchemaMigration"
+only: null
+only_recursion_depth: null
+prepend_primary: false
+cluster: false
+splines: spline

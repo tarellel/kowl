@@ -1,0 +1,28 @@
+# frozen_string_literal: true
+
+<%- unless options[:skip_sidekiq] -%>
+require 'sidekiq/web'
+require 'sidekiq-scheduler/web'
+
+<%- end -%>
+Rails.application.routes.draw do
+<%- unless options[:noauth] -%>
+  devise_for :users
+  resources :users, only: [:index] do
+    get :impersonate, on: :member
+    post :stop_impersonating, on: :collection
+  end
+
+  # Admin/Dashboard
+  namespace :admin do
+    resources :users
+    resources :login_activities
+    root to: 'users#index'
+  end
+<%- end -%>
+
+<%= add_extension_routes(options) -%>
+  get 'welcome', to: 'pages#welcome', as: :welcome
+  root to: 'pages#welcome'
+  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+end

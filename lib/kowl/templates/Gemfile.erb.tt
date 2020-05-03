@@ -1,0 +1,253 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
+
+# ruby '<%= RUBY_VERSION %>'
+gem 'rails', '<%= Kowl::RAILS_VERSION %>'
+gem 'puma', '~> 4.3'                            # Use Puma as the applications web server
+# gem 'iodine', '~> 0.7'                        # An extremely fast and concurrent Application Server (works well with websockets)
+# gem 'falcon'                                  # A high-performance web server for Ruby, supporting HTTP/1, HTTP/2 and TLS
+# Falon => https://www.codeotaku.com/journal/2019-02/falcon-early-hints/index
+gem 'rack', '~> 2.2'
+
+# Gems required for running rails with RUBY_VERSION >= 2.7
+if RUBY_VERSION >= '2.7'
+  gem 'e2mmap'
+  gem 'thwait'
+end
+
+##############################
+### Database
+##############################
+<%- if options[:database] != 'sqlite3' -%>
+<% if options[:database] == 'oracle' -%>
+gem 'ruby-oci8' #, github: 'kubo/ruby-oci8', platforms: :ruby  # only for CRuby users
+gem 'activerecord-oracle_enhanced-adapter', '~> 6.0.0'
+<% elsif options[:database] == 'sqlserver' -%>gem 'activerecord-sqlserver-adapter', github: 'rails-sqlserver/activerecord-sqlserver-adapter', branch: '6-0-dev'
+<% elsif database_gemfile_entry -%>
+<%= indent_all_lines(gem_to_gemfile(database_gemfile_entry)) -%>
+<% end -%>
+<% end -%>
+<%- if options[:database] == 'postgresql' -%>
+gem 'pghero', '>= 2.4'                          # https://github.com/ankane/pghero/blob/master/guides/Rails.md
+gem 'pg_query'                                  # Used by pghero to suggest recommended indexes
+<% end -%>
+gem 'sqlite3'<%= gemfile_requirement('sqlite3') %>
+gem 'strong_migrations'                         # Catch unsafe migrations
+<%- unless options[:skip_erd] -%>
+gem 'rails-erd', group: :development            # Generate an application ERD
+<%- end -%>
+
+##############################
+### Assets
+##############################
+gem 'autoprefixer-rails'                        # add vendor prefixes to particular css properties
+gem 'font-awesome-sass'
+<%- if options[:framework] == 'bootstrap' -%>
+gem 'bootstrap', '~> 4.4'
+<% elsif options[:framework] == 'semantic' -%>
+gem 'semantic-ui-sass'#, github: 'doabit/semantic-ui-sass'
+<%- end -%>
+gem 'sass-rails', '~> 6.0'                      # Libsass for rails pipeline (fast sass-rails replacement)
+<%- unless options[:skip_turbolinks] -%>
+gem 'turbolinks'<%= gemfile_requirement('turbolinks') %>          # turbolinks for browsing your application faster
+<%- end -%>
+<%- if %w[bootstrap semantic].include? options[:framework] -%>
+gem '<%= template_engine_gem_str(options[:framework]) %>_views_generator', group: :development
+<%- end -%>
+<%- unless options[:skip_javascript] -%>
+gem 'webpacker', '~> <%= Kowl::WEBPACKER_VERSION %>'
+<%- end -%>
+
+##############################
+# ActionText/ActiveStorage
+# Used because some gems such as administate still have assets build into the gem
+##############################
+gem 'image_processing'                          # Used for processing ActionStorage uploads with imagemagick and/or vip
+# gem 'active_storage_validations'              # Used for validating active storage uploads
+
+<%- unless options[:noauth] -%>
+##############################
+# Admin/Dashboard
+##############################
+gem 'administrate', github: 'thoughtbot/administrate' # Admin dashboard
+
+##############################
+# Authorization, Authentication [Roles], and permissions
+##############################
+gem 'argon2', '>= 2'            # https://ankane.org/devise-argon2
+gem 'authtrail'                 # For tracking devise login activity
+gem 'devise', github: 'plataformatec/devise' # Rails based user authentication
+gem 'devise-security'           # Additional security measures for devise
+gem 'valid_email2'              # Stronger email validator (Includes RFC, blackist, and whitelist validations)
+gem 'pretender'                 # Allows superusers to emulate being another user
+gem 'pundit'                    # A slim user authorization library
+gem 'maxminddb'                 # Used by AuthTrail, used to prevent geocoder from making remote API Requests to geocoder service
+
+# Additional devise plugins to consider
+# gem 'devise-i18n'             # For i18n translation support
+# gem 'devise_invalidatable`, github: 'madkins/devise_invalidatable'
+# gem 'devise-uncommon_password', github: 'HCLarsen/devise-uncommon_password'
+# -> Avatars
+# gem 'gravatar_image_tag'
+# gem 'letter_avatar', github: 'ksz2k/letter_avatar'
+# -> User Profile data
+# gem 'name_of_person'          # Official bootcamp gem for presenting user names
+<%- end -%>
+
+<%- unless options[:skip_sidekiq] -%>
+##############################
+# Background jobs and Redis
+##############################
+gem 'hiredis'                   # C based adapter for connecting to redis
+gem 'sidekiq', '>= 6.0'         # For scheduling background jobs
+gem 'sidekiq-failures'          # Shows you a list of failed sidekiq jobs
+gem 'sidekiq-scheduler'         # Lightweight job scheduler (mimicks cron scheduling)
+gem 'sidekiq-status'            # View the status of any currently running sidekiq jobs
+# gem 'sidekiq-bulk'            # Easy bulk processing
+# gem 'sidekiq-unique-jobs'     # Ensures only unique jobs are being ran at any given time
+<%- end -%>
+
+<%- unless options[:skip_mailer] -%>
+##############################
+# Mailers
+##############################
+gem 'bootstrap-email'
+<%= mailer_gems(options[:mailer]) %>, group: :production
+group :development do
+  gem 'letter_opener'
+  gem 'letter_opener_web', '~> 1.0'
+end
+<%- end -%>
+
+
+##############################
+# Misc
+##############################
+gem 'auto_strip_attributes', '~> 2.5' # Reduce needing to add before_validation hooks to the models to cleanup attributes
+gem 'fast_jsonapi', github: 'fast-jsonapi/fast_jsonapi' # A lightening fast json serializer
+gem 'jbuilder'<%= gemfile_requirement('jbuilder') %>      # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
+gem 'meta-tags'                 # Used for adding dynamic titles when switching between pages.
+gem 'oj'                        # For faster json generating and parsing
+<% if options[:simpleform] -%>
+gem 'simple_form', '~> 5.0'     # A DSL to make forms easier to work with
+<% end -%>
+<% unless options[:skip_pagination] -%>
+gem 'pagy', '~> 3.7'            # An extremely fast pagination alternative
+<% end -%>
+<%- unless options[:template_engine].to_s == 'erb' -%>
+gem '<%= options[:template_engine] %>-rails'
+<%- end -%>
+
+##############################
+### Performance Optimizations
+##############################
+gem 'attendance'                 # Speed up for ActiveRecord#present? (removes additional query requests)
+gem 'bootsnap', require: false   # Reduces boot times through caching
+gem 'fast_blank', platform: :mri # fast implementation of .blank?
+
+##############################
+### Responses, Errors, and Security
+##############################
+gem 'dotenv-rails', groups: [:development, :test]
+gem 'rack-attack'               # Rack middleware for blocking & throttling
+# gem 'rack-protection', github: 'https://github.com/sinatra/sinatra/tree/master/rack-protection'
+# gem 'secure_headers'          # Manages application of security headers with many safe defaults
+gem 'slowpoke'                  # Utilize Rack::Timeout to kill long running requests
+
+##############################
+### Security (Data Security)
+##############################
+<%- if options[:encrypt] %>
+gem 'blind_index'               # Securely search encrypted database fields
+gem 'lockbox'                   # Modern encryption for Rails (For encrypting sensitive information within the database)
+gem 'rbnacl'                    # Ruby binding for libsodium
+<%- end -%>
+gem 'lograge'                   # For cleaning up your application logs
+gem 'logstop'                   # Keep personally identifiable information (PII) out of your logs
+# gem 'honeybadger'             # For Exception logging (logs the applications backtrace)
+
+##############################
+### Structure [Presentors, Decorators, etc.]
+##############################
+gem 'active_decorator'
+
+##############################
+### Development/Testing gems
+##############################
+group :development, :test do
+  gem 'brakeman'
+  gem 'bundler-audit', github: 'rubysec/bundler-audit'
+  gem 'byebug', platforms: %i[mri mingw x64_mingw]
+<%- unless options[:test_engine] == 'none' -%>
+  gem 'factory_bot_rails'       # For building objects associated with your models
+  gem 'faker'                   # for generating sample data
+<%- end -%>
+<%= pry_gems(options[:skip_pry]) -%>
+
+  # --- Linters (Asset testing, Static Code Analyzers)
+  # gem 'inquisition', github: 'rubygarage/inquisition'
+  <%= template_linter_gems(options[:template_engine]) %>
+  gem 'scss_lint', require: false
+  gem 'rails_best_practices'    # for testing for rails best practice methods
+  gem 'rubocop', require: false # github: 'rubocop-hq/rubocop'
+  gem 'rubocop-performance', '~> 1.5', require: false
+  gem 'rubocop-rails', '~> 2.3', require: false
+  <%= robocop_test_engine(options[:test_engine], options[:skip_tests]) %>
+  # gem 'rubycritic', require: false # Code Quality analyzer
+end
+
+group :development do
+  gem 'annotate'
+  gem 'better_errors'           # dev: better error messages
+  # gem 'binding_of_caller'
+  gem 'bullet'                  # For logging all unnecessary N+1 queries and unused eager_loaded associations
+  gem 'listen'<%= gemfile_requirement('listen') %>
+<%- unless options[:skip_spring] -%>
+  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
+  gem 'spring'
+  gem 'spring-watcher-listen'<%= gemfile_requirement('spring-watcher-listen') %>
+<%- end -%>
+  gem 'web-console'<%= gemfile_requirement('web-console') %>
+end
+
+<%- unless options[:test_engine] == 'none' || options[:skip_tests] -%>
+group :test do
+  gem 'database_cleaner'        # For flushing the database between tests
+<%- if options[:test_engine] == 'minitest' -%>
+  gem 'minitest'
+  gem 'minitest-reporters'      # used to enhance basic minitest capibilities
+<%- elsif options[:test_engine] == 'rspec' -%>
+  gem 'cucumber-rails', require: false
+  gem 'formulaic'               # For generating form based test submissions
+  gem 'fuubar'                  # RSpec progress bar
+  # gem 'parallel_tests'        # needs to be ran against a database other than sqlite3
+  gem 'pig-ci-rails'            # For displaying application memory metrics while running tests
+<%- unless options[:noauth] -%>
+  gem 'pundit-matchers'         # RSpec matchers for testing Pundit authorization policies
+<%- end -%>
+  gem 'rspec-rails', '>= 3.9'
+<%- unless options[:skip_sidekiq] -%>
+  gem 'rspec-sidekiq'
+<%- end -%>
+<%- end -%>
+  gem 'rails-controller-testing' # , github: 'rails/rails-controller-testing'
+  gem 'simplecov'               # generate html report on the applications test results
+  gem 'shoulda'                 # Write easy to understand and maintainable tests
+  gem 'test-prof'               # For profiling tests, rspec, and factories
+  gem 'timecop'                 # For time based testing (time travel)
+
+  ##############################
+  ### integration testing
+  ##############################
+  # Adds support for Capybara system testing and selenium driver
+  gem 'capybara'<%= gemfile_requirement('capybara') %>
+  gem 'selenium-webdriver'
+  gem 'webdrivers', '~> 4.0'
+end
+<%- end -%>
+
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+gem 'kowl'

@@ -1,0 +1,15 @@
+bin/
+config/
+coverage/
+db/
+node_modules/
+public/
+lib/
+log/
+node_modules/
+public/
+spec/
+storage/
+test/
+tmp/
+vendor/

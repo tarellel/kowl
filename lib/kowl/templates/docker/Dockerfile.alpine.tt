@@ -1,0 +1,92 @@
+FROM ruby:<%= RUBY_VERSION %>-alpine
+
+########################################
+# Set Environment variables
+########################################
+# If a RAILS_MASTER_KEY is used to encrypt credentails within the container
+# ARG RAILS_MASTER_KEY
+# ENV RAILS_MASTER_KEY=$RAILS_MASTER_KEY
+ARG RAILS_ENV="development"
+ENV PATH="/usr/sbin:/app/bin:$PATH"
+<%= dockerfile_database_args unless options[:database] == 'sqlite3' -%>
+ENV APP_USER='app' \
+    APP_GROUP='app' \
+    APP_HOME='/app' \
+    BUNDLE_PATH="vendor/cache" \
+    BUNDLE_JOBS=4 \
+    BUNDLE_RETRY=3 \
+    RAILS_ENV=$RAILS_ENV \
+    MALLOC_ARENA_MAX=2
+  # MALLOC_ARENA_MAX used to improve memory GC cycle performance
+  # https://github.com/prestodb/presto/issues/8993
+  # https://github.com/heroku/heroku-buildpack-ruby/issues/751
+  # https://www.speedshop.co/2017/12/04/malloc-doubles-ruby-memory.html
+
+
+# Update all Base OS Packages
+# => Install build-base and libffi-dev which is required to install various dependencies, gems, etc
+# => dumb-init is installed to prevent zombie child processes from spawning
+RUN apk update && apk -U upgrade >/dev/null 2>&1 && \
+    apk add build-base ca-certificates libffi-dev linux-headers openssl >/dev/null 2>&1 && \
+<%= alpine_docker_dependencies(options) -%>
+    rm -rf /tmp/* /var/tmp/* /var/cache/apk/* && \
+    truncate -s 0 /var/log/*log
+
+<%- unless options[:database] == 'sqlite3' && options[:skip_sidekiq] -%>
+# Dockerize is used to prevent the application container from dieing (because other services haven't finished starting yet)
+# => This is because some of the database containers have an initialization time and will cause your application to fail if it tries to create the application database before mysql has loaded
+ENV DOCKERIZE_VERSION v0.6.1
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
+    tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz && \
+    rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+<%- end -%>
+
+########################################
+# Disable gem documentation downloading
+########################################
+RUN mkdir -p /usr/local/etc \
+    && { \
+    echo 'gem: --no-document'; \
+    echo 'install: --no-document'; \
+    echo 'update: --no-document'; \
+    } >> /usr/local/etc/gemrc && \
+    echo 'gem: --no-document' >> ~/.gemrc
+
+########################################
+# Update and install all default gems
+# Correct issue with fileutils
+########################################
+RUN gem uninstall --all --ignore-dependencies --executables && gem cleanup && \
+    gem update --system --no-document && gem update --no-document && \
+    gem uninstall fileutils; gem update fileutils --default
+
+########################################
+# Setup user, application, and directory stuff
+########################################
+RUN addgroup -S $APP_GROUP && \
+    adduser -h $APP_HOME -s /bin/bash -D -G $APP_GROUP $APP_USER && \
+    mkdir -p $APP_HOME && \
+    chown -R $APP_USER:$APP_USER $APP_HOME
+
+########################################
+# Application / Install gems
+########################################
+WORKDIR $APP_HOME
+COPY . $APP_HOME
+RUN chown -R $APP_USER:$APP_USER $APP_HOME
+USER $APP_USER
+# Install and compile the applications assets
+RUN bundle config set without 'test' && \
+    bundle config set clean true && \
+    bundle install --jobs ${BUNDLE_JOBS} --retry ${BUNDLE_RETRY} --quiet && \
+<%- unless options[:skip_javascript] -%>
+    yarn check --silent >/dev/null 2>&1 || yarn install --frozen-lockfile; yarn cache clean && \
+<%- end -%>
+    rails assets:precompile<%= dockerfile_migration_snip(options[:database]) -%>
+
+HEALTHCHECK CMD curl --fail "http://$(/bin/hostname -i | /usr/bin/awk '{ print $1 }'):${PORT:-3000}" || exit 1
+# ########################################
+# # Dockerfile EntryPoint commands
+# ########################################
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD ["bundle", "exec", "rails", "server", "-p", "3000", "-b", "0.0.0.0"]

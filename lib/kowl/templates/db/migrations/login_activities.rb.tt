@@ -1,0 +1,41 @@
+# frozen_string_literal: true
+
+class CreateLoginActivities < ActiveRecord::Migration[6.0]
+  def change
+    create_table :login_activities do |t|
+      t.string :scope
+      t.string :strategy
+<%- if options[:encrypt] -%>
+      t.string :identity_ciphertext
+      t.string :identity_bidx
+<%- else -%>
+      t.string :identity
+<%- end -%>
+      t.boolean :success
+      t.string :failure_reason
+      t.references :user, polymorphic: true
+      t.string :context
+<%- if options[:encrypt] -%>
+      t.string :ip_ciphertext
+      t.string :ip_bidx
+<%- else -%>
+      t.string :ip
+<%- end -%>
+      t.text :user_agent
+      t.text :referrer
+      t.string :city
+      t.string :region
+      t.string :country
+      t.float :latitude
+      t.float :longitude
+      t.datetime :created_at
+    end
+
+<%- if options[:encrypt] -%>
+    add_index :login_activities, :identity_bidx
+    add_index :login_activities, :ip_bidx
+<%- else -%>
+    add_index :login_activities, :ip
+<%- end -%>
+  end
+end

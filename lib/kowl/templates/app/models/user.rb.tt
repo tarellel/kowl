@@ -1,0 +1,72 @@
+# frozen_string_literal: true
+
+class User < ApplicationRecord
+  # == Attributes =====================================
+  alias_attribute :avatar, :email
+<%- unless options[:skip_mailer] -%>
+  def devise_mailer
+    DeviseMailer
+  end
+<%- end -%>
+<%- if options[:encrypt] -%>
+  # Encrypted user attributes
+  encrypts :email
+  blind_index :email
+<%- end -%>
+
+  def self.policy_class
+    UserPolicy
+  end
+
+  # == Constants =====================================
+  enum role: { superuser: 0, staff: 1, user: 2, visitor: 3 }
+  # enum role: { superuser: 'superuser', staff: 'staff', user: 'user', visitor: 'visitor' }
+
+  # == Extensions ====================================
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :secure_validatable,
+         :lockable, :timeoutable, :trackable,
+         email_validation: false # Since we are using valid_email validator for a stricter email validator
+  # https://github.com/micke/valid_email2/issues/121
+
+  # == Relationships =================================
+<%- if options[:database] == 'sqlserver' -%>
+  has_many :login_activities, as: :user, dependent: :delete_all, inverse_of: :user # devise audit log
+<%- else -%>
+  has_many :login_activities, -> { order(created_at: :desc) }, as: :user, dependent: :delete_all, inverse_of: :user # devise audit log
+<%- end -%>
+
+  # == Validations ===================================
+  # minimum length of 5 to match: a@a.a
+  validates :email, presence: true, 'valid_email_2/email': { disposable: false }, length: { minimum: 5, maximum: 255 }, uniqueness: { case_sensitive: false }, allow_nil: false
+  validates :role, presence: true, inclusion: { in: roles.keys }, allow_nil: false
+
+  # == Scopes ========================================
+
+  # == Callbacks =====================================
+  # Before any validations ensure a default role is set
+  before_validation do
+    self.role ||= :user
+  end
+
+  # == Class Methods =================================
+  def admin?
+    role?(:superuser)
+  end
+
+  def staff?
+    role?(:staff)
+  end
+
+  def staff_member?
+    role?(:superuser) || role?(:staff)
+  end
+
+  def role?(role)
+    self.role == role.to_s
+  end
+
+  # == Instance Methods ==============================
+end

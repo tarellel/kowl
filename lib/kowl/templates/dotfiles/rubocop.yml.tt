@@ -1,0 +1,78 @@
+require:
+  - rubocop-performance
+  - rubocop-rails
+<%- if options[:test_engine] == 'minitest' && !options[:skip_tests] -%>
+  - rubocop-minitest
+<%- elsif options[:test_engine] == 'rspec' && !options[:skip_tests] -%>
+  - rubocop-rspec
+<%- end -%>
+
+AllCops:
+  NewCops: disable
+  Exclude:
+    - Aptfile
+    - Brewfile
+    - Gemfile
+    - Guardfile
+    - Rakefile
+    - '.**'
+    - '**/*.md'
+    - '**/**.yml'
+    - 'app/assets/**/*'
+    - 'benches/**/*'
+    - 'bin/**/*'
+    - 'config/**/*'
+    - 'db/**/*'
+    - 'docs/**/*'
+    - 'hidden/**/*'
+    - 'lib/**/*'
+    - 'log/**/*'
+    - 'node_modules/**/*'
+    - 'pkg/**/*'
+    - 'public/**/*
+    - 'storage/**/*'
+    - 'test/**/*'
+    - 'spec/rails_helper.rb'
+    - 'spec/spec_helper.rb'
+    - 'spec/support/**/**'
+    - 'tmp/**/*'
+    - 'vendor/**/*'
+  TargetRubyVersion: <%= RUBY_VERSION.to_f %>
+  UseCache: true
+Layout/LineLength:
+  AllowURI: true
+  Enabled: false
+Metrics/AbcSize:
+  Max: 42
+Metrics/BlockLength:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Max: 12
+Metrics/MethodLength:
+  CountComments: false
+  Max: 43
+Metrics/ModuleLength:
+  Max: 164
+Metrics/PerceivedComplexity:
+  Max: 14
+Style/Documentation:
+  Enabled: false
+Style/EmptyMethod:
+  EnforcedStyle: expanded
+Style/HashEachMethods:
+  Enabled: false
+Style/HashTransformValues:
+  Enabled: false
+Style/HashTransformKeys:
+  Enabled: false
+# Style/FrozenStringLiteralComment:
+#   Description: ">- Apply frozen_string_literal to the top of ruby files\nThis is for transitioniting from Ruby 2.3 to Ruby 3.0"
+#   Enabled: false
+
+##############################
+# Rails specific
+##############################
+Rails/HasManyOrHasOneDependent:
+  Enabled: false
+Rails/InverseOf:
+  Enabled: false

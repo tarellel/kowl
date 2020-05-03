@@ -1,0 +1,5 @@
+<footer class="footer">
+  <div class="container-fluid">
+    <span class="text-muted"><%= app_name.titleize %> &copy; <%= Date.current.strftime('%Y') %></span>
+  </div>
+</footer>

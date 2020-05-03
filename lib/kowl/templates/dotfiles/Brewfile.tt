@@ -1,0 +1,49 @@
+# Install development dependencies on Mac OS X using Homebrew (http://mxcl.github.com/homebrew)
+
+# Misc dependencies you should already have (required for building and compiling dependencies)
+brew 'autogen'
+brew 'autoconf'
+brew 'cmake'
+brew 'libtool'
+brew 'make'
+
+# You should already have git installed; ensure that it is the latest version
+brew 'git'
+
+# To improve Ruby memory allocation performance
+brew 'jemalloc'
+
+# Used for assets and stuff
+brew 'node'
+brew 'yarn'
+# If you plan to use sidekiq or run any background jobs
+# brew 'redis'
+cask 'chromedriver'
+
+<%- unless options[:skip_erd] -%>
+# Used generate the applications database ERD
+brew 'graphviz'
+<%- end -%>
+
+# For processing images with ActionText/ActiveStorage, sidekiq, etc.
+brew 'vips'
+# If you want to use imagemagick instead
+brew 'imagemagick'
+
+<%- if options[:encrypt] -%>
+# Used to encrypt Personal Identifiable information in the database (GDPR Compliance)
+brew 'libsodium'
+<%- end -%>
+
+# Database clients
+<%- case options[:database] -%>
+<%- when 'oracle' -%>
+brew 'instantclient-basic'
+brew 'instantclient-sdk'
+<%- when 'sqlserver' -%>
+brew 'freetds'
+<%- when 'postgresql' -%>
+brew 'postgresql'
+<%- else -%>
+<%- end -%>
+brew 'sqlite'

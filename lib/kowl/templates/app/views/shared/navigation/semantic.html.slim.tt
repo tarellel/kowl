@@ -1,0 +1,36 @@
+.ui.fixed.inverted.menu
+  .menu
+    = link_to '/', class: 'header item' do
+      = app_name.titleize
+    a.item href="/"  Home
+    .ui.simple.dropdown.item Dropdown
+      i.dropdown.icon
+      .menu
+        a.item href="#"  Link Item
+        a.item href="#"  Link Item
+        .divider
+        .header Header Item
+        .item
+          i.dropdown.icon Sub Menu
+          .menu
+            a.item href="#"  Link Item
+            a.item href="#"  Link Item
+        a.item href="#"  Link Item
+<%- unless options[:noauth] %>
+    .right.menu
+      - if user_signed_in?
+        - if current_user.staff_member?
+          = link_to 'admin', admin_root_path, class: 'item'
+        .ui.simple.dropdown.item
+          span.current_user= current_user.email
+          i.dropdown.icon
+          .menu
+            = link_to "#{icon('fas', 'user-circle mr-1')} Edit Account".html_safe, edit_user_registration_path, class: 'item'
+            - if current_user != true_user
+              = link_to stop_impersonating_users_path, method: :post, class: 'item', title: 'Stop impersonating user' do
+                == "#{icon('fas','theater-masks')} Stop Impersonating"
+            .divider
+            = link_to "#{icon('fas', 'sign-out-alt mr-1')} Logout".html_safe, destroy_user_session_path, method: :delete, class: 'item'
+      - else
+        = link_to('Login', new_user_session_path, class: 'item')
+<%- end -%>

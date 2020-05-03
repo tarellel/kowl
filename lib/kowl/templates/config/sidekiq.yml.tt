@@ -1,0 +1,17 @@
+---
+:verbose: false
+:pidfile: ./tmp/pids/sidekiq.pid
+:concurrency: <%= ENV.fetch('RAILS_MAX_THREADS', 5).to_i %>
+:timeout: <%= ENV.fetch('JOB_TIMEOUT', 120).to_i %>
+# :max_retries: <%= ENV.fetch('JOB_RETRY_ATTEMPTS', 5).to_i %>
+:queues:
+  - [critical, 10]
+  - [default, 6]
+  - [mailer, 2]
+  - [low, 1]
+<%- if options[:database] == 'postgresql' -%>
+:schedule:
+  pghero_scheduler:
+    every: '5m'
+    class: Scheduler::PgheroScheduler
+<%- end -%>

@@ -1,0 +1,33 @@
+# <%= app_name %>
+
+## Rails Build Environment
+
+**Ruby:** <%= RUBY_VERSION %>
+
+**Rails:** <%= Rails::VERSION::STRING %>
+
+**Database:** <%= options[:database] %>
+
+**Additional Info**
+
+<%- unless options[:skip_erd] -%>
+## Database Structure (ERD)
+
+![](<%= app_name.parameterize %>_erd.png)
+
+<%- end -%>
+## Getting Started
+
+### Prerequisites
+
+Things you need to do in order for the software to run.
+
+```shell
+bundle install
+rails db:migrate db:seed
+rails s
+```
+
+### Installing
+
+A step-by-step guide on how to install the software to run and function as intended.

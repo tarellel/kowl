@@ -1,0 +1,3 @@
+%footer.footer
+  .container-fluid
+    %span.text-muted <%= app_name.titleize %> &copy; <%= Date.current.strftime('%Y') %>

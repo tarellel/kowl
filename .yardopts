@@ -1,0 +1,12 @@
+--title 'Kowl'
+--quiet
+--exclude lib/kowl/templates
+--exclude lib/kowl/generators
+--exclude spec
+--asset docs/images:images
+-
+CHANGELOG.md
+LICENSE
+README.md
+*.md
+# Docs -> https://manpages.debian.org/stretch/yard/yardoc.1

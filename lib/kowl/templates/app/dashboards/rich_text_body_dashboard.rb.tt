@@ -1,0 +1,17 @@
+# frozen_string_literal: true
+
+require 'administrate/base_dashboard'
+class RichTextBodyDashboard < Administrate::BaseDashboard
+  ATTRIBUTE_TYPES = {
+    name: Field::String,
+    body: Field::Text,
+<%- if options[:uuid] -%>
+    record_id: Field::String,
+<%- else -%>
+    record_id: Field::BelongsTo,
+<%- end -%>
+    record_type: Field::String
+  }.freeze
+
+  FORM_ATTRIBUTES = %i[body].freeze
+end

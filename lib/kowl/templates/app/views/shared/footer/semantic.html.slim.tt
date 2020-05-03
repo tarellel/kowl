@@ -1,0 +1,5 @@
+.ui.vertical.footer.segment
+  .ui.center.aligned.container
+    .ui.horizontal.small.divided.link.list
+      strong <%= app_name.titleize %>
+      | &copy; <%= Date.current.strftime('%Y') %>

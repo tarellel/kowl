@@ -1,0 +1,55 @@
+version: '3.7'
+
+# https://docs.docker.com/compose/compose-file/#extension-fields
+x-app_base: &x-app_base
+  # tty: true
+  stdin_open: true
+  env_file: .env
+  restart: always
+  networks:
+    - internal_network
+    - external_network
+  environment:
+<%= docker_variables(options) %>
+    # RAILS_MASTER_KEY: ${RAILS_MASTER_KEY:-<%= SecureRandom.hex(16).force_encoding(Encoding::US_ASCII) %>}
+  volumes:
+<%= app_volumes(options[:skip_javascript], 4) %>
+<%= docker_depends_on(database: options[:database], skip_sidekiq: options[:skip_sidekiq], indention: 4, spaces: 2) -%>
+
+services:
+<%- if %w[mysql oracle postgresql sqlserver].include? options[:database] -%>
+<%= docker_databases(options[:database]) %>
+<%- end -%>
+  base: &base
+    <<: *x-app_base
+    build:
+      context: .
+    container_name: <%= app_name %>
+    command: >
+      sh -c "rm -rf /app/tmp/pids/server.pid /app/.local >/dev/null 2>&1"
+
+  web:
+    <<: *x-app_base
+    container_name: <%= app_name %>_web
+    image: <%= app_name %>_base:latest
+    command: >
+      sh -c "<%= docker_app_command(options[:database], options[:skip_sidekiq]) -%>"
+    ports:
+      - 3000:3000
+    healthcheck:
+      test: ["CMD", "http", "GET", "localhost:3000"]
+<%= docker_depends_on(database: options[:database], skip_sidekiq: options[:skip_sidekiq], indention: 6, spaces: 4, requires_base: true) -%>
+
+<%- unless options[:skip_sidekiq] -%>
+<%= docker_redis_service %>
+<%= docker_sidekiq_service(options[:database]) %>
+<%- end -%>
+<%= docker_webpacker_service(options) unless options[:skip_javascript] -%>
+
+networks:
+  external_network:
+  internal_network:
+    internal: true
+volumes:
+  app:
+<%= docker_volumes(options) -%>

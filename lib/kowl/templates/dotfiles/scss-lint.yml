@@ -1,0 +1,132 @@
+# https://github.com/brigade/scss-lint/blob/master/lib/scss_lint/linter/README.md
+# https://github.com/tootsuite/mastodon/blob/master/.scss-lint.yml
+# Exclude foreign made assets and stylesheets
+exclude:
+  - 'lib/*'
+  - 'test/*'
+  - 'spec/*'
+  - 'storage/**/*'
+  - 'tmp/**/*'
+  - 'vender/*'
+
+linters:
+  # Reports when you use improper spacing around ! (the "bang") in !default,
+  # !global, !important, and !optional flags.
+  BangFormat:
+    enabled: true
+
+  # Whether or not to prefer `border: 0` over `border: none`.
+  BorderZero:
+    enabled: true
+
+  # this allows you to use #fff rather than specifing a color through a variable
+  ColorVariable:
+    enabled: false
+
+  # Allow you to use /* multiline */ comments rather and limited to //
+  Comment:
+    enabled: false
+
+  # Reports when you define the same property twice in a single rule set.
+  DuplicateProperty:
+    enabled: true
+    ignore_consecutive:
+      - cursor
+
+  # Separate rule, function, and mixin declarations with empty lines.
+  EmptyLineBetweenBlocks:
+    enabled: true
+
+  # Reports when you have an empty rule set.
+  EmptyRule:
+    enabled: true
+
+  # Files should always have a final newline. This results in better diffs
+  # when adding lines to the file, since SCM systems such as git won't
+  # think that you touched the last line.
+  FinalNewline:
+    enabled: true
+
+  # HEX color values should use lower-case colors to differentiate between
+  # letters and numbers, e.g. `#E3E3E3` vs. `#e3e3e3`.
+  HexNotation:
+    enabled: true
+
+  # allow #ids to be used
+  IdSelector:
+    enabled: false
+
+  # allows you to use !important
+  ImportantRule:
+    enabled: false
+
+  Indentation:
+    severity: warning
+    width: 2
+
+  # Don't write leading zeros for numeric values with a decimal point.
+  LeadingZero:
+    enabled: false
+
+  # Avoid nesting selectors too deeply.
+  NestingDepth:
+    enabled: true
+    max_depth: 6 # default is 3, revert back to 3 after cleanup
+    ignore_parent_selectors: false
+
+  # Reports when you use an unknown or disabled CSS property
+  # (ignoring vendor-prefixed properties).
+  PropertySpelling:
+    enabled: false
+
+  # Avoid qualifying elements in selectors (also known as "tag-qualifying").
+  QualifyingElement:
+    enabled: false
+    allow_element_with_attribute: false
+    allow_element_with_class: false
+    allow_element_with_id: false
+
+  # Don't write selectors with a depth of applicability greater than max_depth
+  SelectorDepth:
+    enabled: true
+    max_depth: 6 # default is 3, revert back to 3 after cleanup
+
+  # ENABLE: currently disabled to remove errors from addons (icheckbox, etc.)
+  SelectorFormat:
+    enabled: true
+
+  # Prefer the shortest shorthand form possible for properties that support it.
+  Shorthand:
+    enabled: true
+
+  # Each property should have its own line, except in the special case of
+  # single line rulesets.
+  SingleLinePerProperty:
+    enabled: true
+    allow_single_line_rule_sets: true
+
+  # allow selectors to be listed all in the same line: h1, h2, h3
+  SingleLinePerSelector:
+    enabled: false
+
+  # Commas in lists should be followed by a space.
+  SpaceAfterComma:
+    enabled: false
+
+  # Properties should be formatted with a single space separating the colon
+  # from the property's value.
+  SpaceAfterPropertyColon:
+    enabled: true
+
+  # Property values, @extend, @include, and @import directives, and variable
+  # declarations should always end with a semicolon.
+  TrailingSemicolon:
+    enabled: true
+
+  # avoid errors caused by using VenderPrefixes
+  VendorPrefix:
+    enabled: false
+
+  # Omit length units on zero values, e.g. `0px` vs. `0`.
+  ZeroUnit:
+    enabled: true

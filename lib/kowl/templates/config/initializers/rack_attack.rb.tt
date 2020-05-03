@@ -1,0 +1,71 @@
+# frozen_string_literal: true
+
+# https://github.com/kickstarter/rack-attack
+# https://ankane.org/hardening-devise#rate-limit-login-attempts
+# https://www.diycode.cc/projects/kickstarter/rack-attack
+# https://blog.bigbinary.com/2018/05/15/how-to-mitigate-ddos-using-rack-attack.html
+# https://redpanthers.co/rack-attack-secure-you-rails-app-for-the-real-world/
+# https://github.com/studentinsights/studentinsights/blob/master/config/initializers/rack_attack.rb
+if defined?(Rack::Attack)
+  class Rack::Attack
+    # https://github.com/kickstarter/rack-attack#cache-store-configuration
+    # CacheStore is only used for throttling, allow2ban and fail2ban filtering (blocklisting and safelisting not included)
+    <%- if options[:skip_sidekiq] -%>
+    Rack::Attack.cache.store = ActiveSupport::Cache::MemoryStore.new
+    <%- else -%>
+    Rack::Attack.cache.store = ActiveSupport::Cache::RedisCacheStore.new
+    <%- end -%>
+
+    if Rails.env.production?
+      # Limit a client to have a max of 40 requests a minute
+      throttle('req/ip', limit: 40, period: 1.minute) do |req|
+        req.ip if req.path == '/'
+      end
+
+      <%- unless options[:noauth] -%>
+      # Used to throttle requests on failed login attempts
+      throttle('logins/ip', limit: 20, period: 1.hour) do |req|
+        req.ip if req.post? && req.path.start_with?('/users/sign_in')
+      end
+
+      # Devise based throttling
+      throttle('users/sign_up', limit: 3, period: 15.minutes) do |req|
+        # Using “vanilla” devise inside a User model
+        req.ip if req.path == '/users' && req.post?
+      end
+
+      throttle('users/sign_in', limit: 7, period: 15.minutes) do |req|
+        # Using “vanilla” devise inside a User model
+        req.ip if req.path == '/users/sign_in' && req.post?
+      end
+      <%- end -%>
+    end
+
+    # Make localhost safe to receive a large number of requests from the application
+    safelist('allow from localhost') do |req|
+      '127.0.0.1' == req.ip || '::1' == req.ip
+    end
+
+    Rack::Attack.blocklisted_response = lambda do |env|
+      # Using 503 because it may make attacker think that they have successfully
+      # DOSed the site. Rack::Attack returns 403 for blocklists by default
+      [ 503, {}, ['Blocked']]
+    end
+
+    Rack::Attack.throttled_response = lambda do |env|
+      # NB: you have access to the name and other data about the matched throttle
+      #  env['rack.attack.matched'],
+      #  env['rack.attack.match_type'],
+      #  env['rack.attack.match_data'],
+      #  env['rack.attack.match_discriminator']
+
+      # Using 503 because it may make attacker think that they have successfully
+      # DOSed the site. Rack::Attack returns 429 for throttling by default
+      [ 503, {}, ["Server Error\n"]]
+    end
+  end
+
+  # ActiveSupport::Notifications.subscribe('rack.attack') do |name, start, finish, request_id, req|
+  #   puts "Throttled #{req.env['rack.attack.match_discriminator']}"
+  # end
+end

@@ -1,0 +1,7 @@
+<div class="ui vertical footer segment">
+  <div class="ui center aligned container">
+    <div class="ui horizontal small divided link list">
+      <strong><%= app_name.titleize %></strong> &copy; <%= Date.current.strftime('%Y') %>
+    </div>
+  </div>
+</div>
