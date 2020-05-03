@@ -170,7 +170,7 @@ Options:
 
   `kowl AppName --git_repo=https://github/username/REPO_NAME.git`
 
-  Will generate an app with remote directory of https://github/username/REPO_NAME.git
+  Will generate an app with the remote repo set as `https://github/username/REPO_NAME.git`
 
   `kowl foobar --template_engine=haml --simpleform --framework=semantic;`
 
