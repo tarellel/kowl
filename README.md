@@ -326,7 +326,7 @@ If using ruby `>= 2.7` it also includes `e2mmap` and `thwait` to prevent ruby de
 
 ## Additonal Stuff
 
-* It corrects the issue ([37008](https://github.com/rails/rails/pull/37008)) when generating a Rails (v6) application when specifying Oracle as teh database
+* It corrects the issue ([37008](https://github.com/rails/rails/pull/37008)) when generating a Rails (v6) application when specifying Oracle as the database
 * When using this gem to generate applications it changes the devise password encrypting from bcrypt to [Argon2](https://cryptobook.nakov.com/mac-and-key-derivation/argon2)
 * When generating application Dockerfiles it defaults to using [Alpine](https://alpinelinux.org/) which will produce smaller docker images. But if applications are specified to use Oracle as the database it will default to [Debian](https://www.debian.org/) _(due to the required dependencies to use the [Oracle InstantClient](https://www.oracle.com/database/technologies/instant-client.html))_.
 * The `--encrypt` flag is used to enforce [GDPR](https://gdprchecklist.io/) and [CCPA](https://oag.ca.gov/privacy/ccpa) compliance to encrypt PII for users. _([GDPR Article 34, Section 3 (a)](https://gdpr-info.eu/art-34-gdpr/))_ By encrypting user identifiable information; this ensurers PII isn't plain text readable by hackers in case there is a data breach with the application. When encrypting user data it will use the [lockbox](https://github.com/ankane/lockbox) with the [xsalsa20](https://en.wikipedia.org/wiki/Salsa20) algorithm which requires [libsodium](https://libsodium.gitbook.io/doc/).
