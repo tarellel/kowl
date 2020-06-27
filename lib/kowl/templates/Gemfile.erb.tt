@@ -126,7 +126,7 @@ end
 # Misc
 ##############################
 gem 'auto_strip_attributes', '~> 2.5' # Reduce needing to add before_validation hooks to the models to cleanup attributes
-gem 'fast_jsonapi', github: 'fast-jsonapi/fast_jsonapi' # A lightening fast json serializer
+gem 'jsonapi-serializer', github: 'jsonapi-serializer/jsonapi-serializer' # A lightening fast json serializer
 gem 'jbuilder'<%= gemfile_requirement('jbuilder') %>      # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'meta-tags'                 # Used for adding dynamic titles when switching between pages.
 gem 'oj'                        # For faster json generating and parsing

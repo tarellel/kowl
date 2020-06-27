@@ -231,7 +231,7 @@ User gems that will be included unless the `--noauth` flag is specified when gen
 * [active_decorator](https://github.com/amatsuda/active_decorator) OOP view helpers for cleaning up your models.
 * [annotate](https://github.com/ctran/annotate_models) for adding a comment summarizing the current schema to models, routes, etc.
 * [auto_strip_attributes](https://github.com/holli/auto_strip_attributes) remove unnecessary whitespace from ActiveRecord attributes.
-* [fast_jsonapi](fast-jsonapi/fast_jsonapi) lightning fast JSON:API serializer (originally releases by [Netflix](https://github.com/Netflix/fast_jsonapi))
+* [jsonapi-serializer](https://github.com/jsonapi-serializer/jsonapi-serializer) lightning fast JSON:API serializer (originally releases by [Netflix](https://github.com/Netflix/fast_jsonapi))
 * [meta-tags](https://github.com/kpumuk/meta-tags) helpers for making SEO/meta-tags easier to manage with your rails application.
 * [oj](http://www.ohler.com/oj/) a fast JSON object serializer.
 * [simple_form](https://github.com/heartcombo/simple_form) a DSL for making forms easy to style and manage.
