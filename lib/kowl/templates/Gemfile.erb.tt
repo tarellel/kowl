@@ -187,6 +187,7 @@ group :development, :test do
 <%= pry_gems(options[:skip_pry]) -%>
 
   # --- Linters (Asset testing, Static Code Analyzers)
+  gem 'fasterer', require: false # Used to scan and check for any slow code
   # gem 'inquisition', github: 'rubygarage/inquisition'
   <%= template_linter_gems(options[:template_engine]) %>
   gem 'scss_lint', require: false
