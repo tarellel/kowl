@@ -135,7 +135,7 @@ module Kowl
     end
 
     # Add PgHero engine mount to the routes if the database iss postgresql
-    # @param database [String] A string containing the applications defined database adapater
+    # @param database [String] A string containing the applications defined database adapter
     # @return [String] the pghero dashboard mount path, if postgresql will be used
     def database_route(database = 'sqlite3')
       return '' unless database.to_s == 'postgresql'

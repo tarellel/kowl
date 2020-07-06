@@ -53,10 +53,10 @@ end
 
 # https://github.com/rails/rails/blob/66cabeda2c46c582d19738e1318be8d59584cc5b/railties/lib/rails/generators/actions.rb
 module Kowl
-  RAILS_VERSION = T.let('6.0.2.2', T.untyped)
+  RAILS_VERSION = T.let('6.0.3.2', T.untyped)
   RUBY_VERSION = T.let('2.5', T.untyped)
   WEBPACKER_VERSION = T.let('5.0', T.untyped)
-  VERSION = T.let('0.0.1', T.untyped)
+  VERSION = T.let('0.0.4', T.untyped)
 
   module Docker
     # Add the applications database commands to the Dockerfile
@@ -356,7 +356,7 @@ module Kowl
 
     # Add PgHero engine mount to the routes if the database iss postgresql
     # 
-    # _@param_ `database` — A string containing the applications defined database adapater
+    # _@param_ `database` — A string containing the applications defined database adapter
     # 
     # _@return_ — the pghero dashboard mount path, if postgresql will be used
     sig { params(database: String).returns(String) }

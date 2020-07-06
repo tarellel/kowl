@@ -113,7 +113,7 @@ def dh(str = '')
 end
 
 # Used to create and return the .env file database configuration for the specific environment
-# @param database [String] the database adapater in which the application will be connecting to
+# @param database [String] the database adapter in which the application will be connecting to
 # @param env [String] the environment which the env file is bring created for
 # @return [String] a list of database parameters for the specific database connection
 def dotfile_databases(database, env)
