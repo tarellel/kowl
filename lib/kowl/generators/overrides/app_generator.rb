@@ -191,8 +191,6 @@ module Kowl
             extract_css: true
             # Cache manifest.json for performance
             cache_manifest: true
-            # Compile staging packs to a separate directory
-            public_output_path: packs-staging
         STAGING
         append_to_file('config/webpacker.yml', "\n#{webpacker_str}")
       end
