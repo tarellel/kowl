@@ -5,5 +5,5 @@ module Kowl
   # Minimum required ruby version which to install the gem
   RUBY_VERSION = '2.5'
   WEBPACKER_VERSION = '5.0'
-  VERSION = '0.0.4'
+  VERSION = '0.0.5'
 end

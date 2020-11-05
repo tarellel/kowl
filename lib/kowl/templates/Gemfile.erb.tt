@@ -5,10 +5,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 # ruby '<%= RUBY_VERSION %>'
 gem 'rails', '<%= Kowl::RAILS_VERSION %>'
-gem 'puma', '~> 4.3'                            # Use Puma as the applications web server
-# gem 'iodine', '~> 0.7'                        # An extremely fast and concurrent Application Server (works well with websockets)
-# gem 'falcon'                                  # A high-performance web server for Ruby, supporting HTTP/1, HTTP/2 and TLS
-# Falon => https://www.codeotaku.com/journal/2019-02/falcon-early-hints/index
+gem 'puma', '>= 4.3'                            # Use Puma as the applications web server
 gem 'rack', '~> 2.2'
 
 # Gems required for running rails with RUBY_VERSION >= 2.7

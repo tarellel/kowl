@@ -81,10 +81,11 @@ RUN mkdir -p $INSTANT_CLIENT_PATH && \
     alien -i $INSTANT_CLIENT_SQLPLUS_PATH 2>/dev/null && \
     ldconfig
 <%- elsif options[:database] == 'sqlserver' -%>
-RUN wget ftp://ftp.freetds.org/pub/freetds/stable/freetds-1.00.27.tar.gz && \
-    tar -xzf freetds-1.00.27.tar.gz && \
-    rm -rf freetds-1.00.27.tar.gz && \
-    cd freetds-1.00.27 && \
+ENV FREETDS_VERSION='1.2.5'
+RUN wget ftp://ftp.freetds.org/pub/freetds/stable/freetds-$FREETDS_VERSION.tar.gz >/dev/null 2>&1 && \
+    tar -xzf freetds-$FREETDS_VERSION.tar.gz && \
+    rm -rf freetds-$FREETDS_VERSION.tar.gz && \
+    cd freetds-$FREETDS_VERSION && \
     ./configure --prefix=/usr/local --with-tdsver=7.3 --silent >/dev/null 2>&1 && \
     make -j "$(nproc)" >/dev/null 2>&1 && \
     make install >/dev/null 2>&1 && \

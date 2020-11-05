@@ -29,6 +29,7 @@ ENV APP_USER='app' \
 RUN apk update && apk -U upgrade >/dev/null 2>&1 && \
     apk add build-base ca-certificates libffi-dev linux-headers openssl >/dev/null 2>&1 && \
 <%= alpine_docker_dependencies(options) -%>
+    ln -sf python3 /usr/bin/python && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/* && \
     truncate -s 0 /var/log/*log
 

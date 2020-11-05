@@ -389,7 +389,7 @@ module Kowl
     # @return [String] an apk string for installing dependencies in the dockerfile
     def alpine_docker_dependencies(options = {})
       # core dependencies
-      dependencies = %w[brotli dumb-init git sqlite sqlite-dev tzdata vips vips-dev yarn]
+      dependencies = %w[brotli dumb-init git python3 sqlite sqlite-dev tzdata vips vips-dev yarn]
       # optional dependencies
       dependencies << 'graphviz' unless options[:skip_erd]
       dependencies << 'libsodium-dev' if options[:encrypt]
@@ -413,7 +413,7 @@ module Kowl
     # @param options [Hash] a list of the applictions specific options to determine what all dependencies are required
     # @return [String] an `apt-get install` with a list of all the applications dependencies listed
     def debian_docker_dependencies(options = {})
-      dependencies = %w[brotli curl git libjemalloc-dev libsqlite3-dev libvips sqlite3 wget]
+      dependencies = %w[brotli curl git libjemalloc-dev libsqlite3-dev libvips python sqlite3 wget]
 
       # optional dependencies
       dependencies << 'graphviz' unless options[:skip_erd]
