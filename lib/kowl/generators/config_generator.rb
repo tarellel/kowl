@@ -127,11 +127,6 @@ module Kowl
       copy_file 'middleware.rb', 'config/initializers/middleware.rb', force: true
     end
 
-    # Generate initializer for using administrate with the application
-    def copy_administate_config
-      template('administrate.rb.tt', 'config/initializers/administrate.rb') unless options[:noauth]
-    end
-
     # Run the ERD generator, so the application will generate a new ERB when migrations are added/modified
     def setup_erd
       return nil if options[:skip_erd]

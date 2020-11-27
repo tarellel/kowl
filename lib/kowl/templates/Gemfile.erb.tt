@@ -68,7 +68,7 @@ gem 'image_processing'                          # Used for processing ActionStor
 ##############################
 # Admin/Dashboard
 ##############################
-gem 'administrate', github: 'thoughtbot/administrate' # Admin dashboard
+gem 'administrate', '>= 0.14' # Admin dashboard
 
 ##############################
 # Authorization, Authentication [Roles], and permissions
