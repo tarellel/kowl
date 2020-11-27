@@ -126,7 +126,7 @@ Options:
                                              # Default: false
    [--skip_javascript]                       # Skip adding javascript (webpacker) to the application
                                              # Default: false
-   [--skip_mailer]                           # Do you want to skip setting up a
+   [--skip_mailer]                           # Do you want to skip setting up a transactional mailer (see --mailer option above)?
                                              # Default: false
    [--skip_pagination]                       # Do you want to skip using pagination with your application?
                                              # Default: false
@@ -178,7 +178,7 @@ Options:
 
 ### Walk-Throughts
 
-* [#](/docs/actiontext.md) Create an application using simple_form and create posts scaffold and admin page that will use ActionText 
+* [#](/docs/actiontext.md) Create an application using simple_form and create posts scaffold and admin page that will use ActionText
 
 ## Gems
 
