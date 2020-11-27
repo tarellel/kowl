@@ -10,7 +10,6 @@ class LoginActivityDashboard < Administrate::BaseDashboard
   # on pages throughout the dashboard.
   ATTRIBUTE_TYPES = {
     user: Field::Polymorphic,
-    # user: Field::BelongsTo,
 <%- if options[:uuid] -%>
     id: Field::String,
 <%- else -%>
