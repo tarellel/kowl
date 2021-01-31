@@ -33,7 +33,7 @@ module Kowl
 
       # Return a cleaned up version of the name of the application being generated
       def app_name
-        Rails.app_class.parent_name.demodulize.underscore.dasherize
+        @app_name ||= Rails.app_class.module_parent_name.demodulize.underscore.dasherize
       end
     end
   end
